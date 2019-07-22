@@ -38,7 +38,7 @@ class RawDataBus:
 
         # 如果没有指定autocommit属性为True的话就需要调用commit()方法
         self.conn.commit()
-
+        #this is test function
     def closeConn(self):
         self.conn.close()
 
