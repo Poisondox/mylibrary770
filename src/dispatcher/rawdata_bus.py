@@ -9,6 +9,9 @@ Created on 2019年7月21日
 from database_helper.base_database_helper import BaseDatabaseHelper
 import pymssql
 import datetime
+import openpyxl
+import logging
+from book_querier.book_querier_engine import ISBNSearchEngine
 
 class RawDataBus:
     database_helper = 0
@@ -29,6 +32,7 @@ class RawDataBus:
     
     def __del__(self):
         self.conn.close()
+        
     
     def writeBookInformationtoDatabase(self,book_information,isbn):
         
@@ -42,10 +46,40 @@ class RawDataBus:
     def closeConn(self):
         self.conn.close()
 
-if __name__ == '__main__':
-    rb = RawDataBus()
-    rb.writeBookInformationtoDatabase('','')
+def execlDataToList(execl_filepath):
+        #打开工作簿
+    workbook = openpyxl.load_workbook(execl_filepath)
+    sheet = workbook.active
+    logging.info('workbook row is:'+str(sheet.max_row))
+    #定义ISBN列表
+    list_isbn = []
+    for row_id in range(1,sheet.max_row+1):
+       #增加ISBN
+       list_isbn.append(sheet["A"+str(row_id)].value)
+        #输出信息
+    logging.info('ISBN length is'+str(len(list_isbn)))
+    print('ISBN length is:'+str(len(list_isbn)))
+    return list_isbn
 
+def ISBNListToBookInformation(list_isbn):
+    #图书详细内容
+    isbn_list_length = len(list_isbn)
+    bookdetaillist = []
+    isbnEngine = ISBNSearchEngine()
+    for index in range(0,isbn_list_length):
+        #查找图书详情
+        bookdetail = isbnEngine.get_information_with_ISBN(list_isbn[index])
+        #构建图书详细信息
+        bookdetaillist.append(bookdetail)
+        
+    logging.info('book detail list build succeed.')
+    
+    
+
+
+if __name__ == '__main__':
+    list = execlDataToList("D:/rawdata/mylibrary/all_isbn.xlsx")
+    details = ISBNListToBookInformation(list)
 
 
 

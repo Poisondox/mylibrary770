@@ -6,6 +6,7 @@ Created on 2019年7月20日
 
 import urllib.request
 import re
+import logging
 
 class ISBNSearchEngine:
     def  __init__(self):
@@ -31,7 +32,7 @@ class ISBNSearchEngine:
         #执行页面获取
         content = self.__getPage(ISBN)
         if content is None:
-            print('查询结果为空。')
+            logging.info('查询结果为空。')
             return -1
         else:
         #进行搜索
@@ -52,5 +53,6 @@ class ISBNSearchEngine:
             book_information = [title_field.group(1).__str__(),author_field.group(1).__str__(),imprint_field.group(1).__str__() \
                    ,callon_field.group(1).__str__(),isbprice,\
                    isbn_field.group(1).__str__()]
+            logging.info(book_information)
             return book_information 
         
