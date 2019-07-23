@@ -76,7 +76,7 @@ def ISBNListToBookInformation(list_isbn):
     
     
 
-
+#test function
 if __name__ == '__main__':
     list = execlDataToList("D:/rawdata/mylibrary/all_isbn.xlsx")
     details = ISBNListToBookInformation(list)
