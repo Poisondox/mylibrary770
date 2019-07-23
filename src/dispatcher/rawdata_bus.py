@@ -9,6 +9,7 @@ Created on 2019年7月21日
 from database_helper.base_database_helper import BaseDatabaseHelper
 import pymssql
 import datetime
+import logging
 
 class RawDataBus:
     database_helper = 0
@@ -26,19 +27,25 @@ class RawDataBus:
         self.cursor = self.conn.cursor()
         if not self.cursor:
             raise(NameError,'连接数据库失败')
+            logging.error('连接数据库失败')
     
     def __del__(self):
         self.conn.close()
     
     def writeBookInformationtoDatabase(self,book_information,isbn):
-        
+        #执行写入操作
         self.cursor.executemany(self.insert_sql_temple,
                                 [(isbn,book_information[0],book_information[1],book_information[2],
                                   book_information[3],book_information[4],'',datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))])
 
         # 如果没有指定autocommit属性为True的话就需要调用commit()方法
         self.conn.commit()
+        logging.debug("数据写入数据库完成"+isbn)
         #this is test function
+        
+    def writeManyBookInformationToDatabase(self,book_information_list,isbn_list):
+        
+    
     def closeConn(self):
         self.conn.close()
 

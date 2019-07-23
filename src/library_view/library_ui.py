@@ -12,11 +12,12 @@ Created on 2019年7月21日
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 import sys
-from PyQt5.Qt import QMainWindow, QMessageBox
+from PyQt5.Qt import QMainWindow
 from book_querier.book_querier_engine import ISBNSearchEngine
 from dispatcher.rawdata_bus import RawDataBus
+import logging
 
 
 
@@ -125,10 +126,10 @@ class QtLibraryUI(QMainWindow):
         self.btn_ISBNQuery.clicked.connect(self.btnISBNQuertClicked)
         #浏览按钮事件
         self.btn_browse.clicked.connect(self.btnBrowseClicked)
-        #
+        #添加书本
         self.btn_addBook.clicked.connect(self.btnAddBookClicked)
     
-    
+    #ISBN查询图书信息
     def btnISBNQuertClicked(self):
         #QMessageBox.about(self,'test','information')
         str_isbn = self.text_isbn.toPlainText()
@@ -155,8 +156,8 @@ class QtLibraryUI(QMainWindow):
             self.textBrowser.setText(book_information_format)
             rawdatabus = RawDataBus()
             rawdatabus.writeBookInformationtoDatabase(book_information,str_isbn)
-            print('write done')
-            
+            #日志记录
+            logging.info('write done...')
            
     
     

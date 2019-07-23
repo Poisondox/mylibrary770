@@ -5,6 +5,7 @@ Created on 2019年7月20日
 '''
 
 import pymssql
+import logging
 
 '基础数据库功能'
 class BaseDatabaseHelper:
@@ -17,10 +18,12 @@ class BaseDatabaseHelper:
     def GetConnect(self):
         if not self.db:
             raise(NameError,'没有设置数据库信息')
+            logging.error('没有设置数据库信息')
         self.conn = pymssql.connect(host=self.host,user=self.user,password=self.pwd,database=self.db,charset='utf8')
         cur = self.conn.cursor()
         if not cur:
             raise(NameError,'连接数据库失败')
+            logging.error('连接数据库失败')
         else:
             return cur
  
