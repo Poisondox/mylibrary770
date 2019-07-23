@@ -158,8 +158,7 @@ class QtLibraryUI(QMainWindow):
             rawdatabus.writeBookInformationtoDatabase(book_information,str_isbn)
             #日志记录
             logging.info('write done...')
-           
-    
+
     
     
 
