@@ -155,7 +155,7 @@ class QtLibraryUI(QMainWindow):
             self.textBrowser.setText(book_information_format)
             rawdatabus = RawDataBus()
             rawdatabus.writeBookInformationtoDatabase(book_information,str_isbn)
-            print('write done')
+            print('write to database done.')
             
            
     
