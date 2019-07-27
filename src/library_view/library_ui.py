@@ -130,7 +130,7 @@ class QtLibraryUI(QMainWindow):
         #添加书本
         self.btn_addBook.clicked.connect(self.btnAddBookClicked)
         #Execl批量导入
-        self.btn_import.clicke.connect(self.btnBookBatchImportClicked)
+        self.btn_import.clicked.connect(self.btnBookBatchImportClicked)
     
     #ISBN查询图书信息
     def btnISBNQuertClicked(self):
