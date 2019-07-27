@@ -18,6 +18,7 @@ from PyQt5.Qt import QMainWindow
 from book_querier.book_querier_engine import ISBNSearchEngine
 from dispatcher.rawdata_bus import RawDataBus
 import logging
+from dispatcher import rawdata_bus
 
 
 
@@ -128,6 +129,8 @@ class QtLibraryUI(QMainWindow):
         self.btn_browse.clicked.connect(self.btnBrowseClicked)
         #添加书本
         self.btn_addBook.clicked.connect(self.btnAddBookClicked)
+        #Execl批量导入
+        self.btn_import.clicke.connect(self.btnBookBatchImportClicked)
     
     #ISBN查询图书信息
     def btnISBNQuertClicked(self):
@@ -159,6 +162,19 @@ class QtLibraryUI(QMainWindow):
             #日志记录
             logging.info('write done...')
 
+    #execl 内文件批量导入
+    def btnBookBatchImportClicked(self):
+        #导入文件路径
+        file_path = self.text_path.toPlainText()
+        #调试信息
+        logging.debug(file_path)
+        #数据通路
+        raw_databus = RawDataBus()
+        #数据适配至数据库
+        raw_databus.AdapterExecltoDatabase(file_path)
+        #
+        logging.info("write to database succeed.")
+    
     
     
 
