@@ -16,10 +16,11 @@ from PyQt5 import QtCore, QtWidgets
 import sys
 from PyQt5.Qt import QMainWindow
 from book_querier.book_querier_engine import ISBNSearchEngine
-from dispatcher.rawdata_bus import RawDataBus
 import logging
-from dispatcher import rawdata_bus
-
+from dispatcher.rawdata_bus import BuildDatabaseRawDataORM
+from dispatcher.rawdata_orm import InsertBatchBooks, InsertBook
+from ORM_model.decBaseClass import Book
+import datetime
 
 
 class QtLibraryUI(QMainWindow):
@@ -157,8 +158,13 @@ class QtLibraryUI(QMainWindow):
         else:       
             book_information_format = "标题：{0}\n作者:{1}\n出版社：{2}\n中图分类号：{3}\n价格：{4} CNY\n".format(book_information[0],book_information[1],book_information[2],book_information[3],book_information[4])
             self.textBrowser.setText(book_information_format)
-            rawdatabus = RawDataBus()
-            rawdatabus.writeBookInformationtoDatabase(book_information,str_isbn)
+            #构建ORM模型
+            book = Book(ISBN=str_isbn,book_name=book_information[0],book_author=book_information[1],
+                    book_publisher=book_information[2],book_number=book_information[3],
+                    book_price=book_information[4],book_notes=None,
+                    book_storoge_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            #插入图书
+            InsertBook(book)
             #日志记录
             logging.info('write done...')
 
@@ -168,13 +174,11 @@ class QtLibraryUI(QMainWindow):
         file_path = self.text_path.toPlainText()
         #调试信息
         logging.debug(file_path)
-        #数据通路
-        raw_databus = RawDataBus()
-        #数据适配至数据库
-        raw_databus.AdapterExecltoDatabase(file_path)
-        #
+        #构建原始数据
+        books = BuildDatabaseRawDataORM(file_path)
+        #图书批量插入
+        InsertBatchBooks(books)
         logging.info("write to database succeed.")
-    
     
     
 
