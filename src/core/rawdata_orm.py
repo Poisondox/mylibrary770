@@ -19,7 +19,8 @@ from core.book_querier_engine import ISBNSearchEngine
 
 
 #初始化数据库连接
-sql_engine = create_engine('postgresql://sa:xyq566403@192.168.3.88:5432/librarydb',echo=True)
+#sql_engine = create_engine('postgresql://sa:xyq566403@192.168.3.88:5432/librarydb',echo=True)
+sql_engine = create_engine('postgresql://sa:xyq566403@10.150.87.163:15432/librarydatabase',echo=True)
 #初始化数据库实例session
 sessionType = scoped_session(sessionmaker(bind=sql_engine))
 #销毁数据库
@@ -92,6 +93,7 @@ def BuildDatabaseRawDataORM(execl_filepath):
             logging.error('列表数据长度不符')
             raise Exception('长度不符')
         for index in range(0,len(list_isbn)):
+            
             #构建基础元组数据
             tempbook = Book(ISBN=list_isbn[index],book_name=book_details_list[index][0],book_author=book_details_list[index][1],
                     book_publisher=book_details_list[index][2],book_number=book_details_list[index][3],
