@@ -11,16 +11,13 @@ from contextlib import contextmanager
 import time
 import datetime
 import openpyxl
-import logging
 from core.book_querier_engine import ISBNSearchEngine
-
-
-
+from core.get_config import getConfigFromFile
+from core.loggers import logger
 
 
 #初始化数据库连接
-#sql_engine = create_engine('postgresql://sa:xyq566403@192.168.3.88:5432/librarydb',echo=True)
-sql_engine = create_engine('postgresql://sa:xyq566403@10.150.87.163:15432/librarydatabase',echo=True)
+sql_engine = create_engine(getConfigFromFile('db_cfg.ini'),echo=True)
 #初始化数据库实例session
 sessionType = scoped_session(sessionmaker(bind=sql_engine))
 #销毁数据库
@@ -50,15 +47,14 @@ def execlDataToList(execl_filepath):
         #打开工作簿
     workbook = openpyxl.load_workbook(execl_filepath)
     sheet = workbook.active
-    logging.info('workbook row is:'+str(sheet.max_row))
+    logger.info('workbook row is:'+str(sheet.max_row))
     #定义ISBN列表
     list_isbn = []
     for row_id in range(1,sheet.max_row+1):
         #增加ISBN
         list_isbn.append(sheet["A"+str(row_id)].value)
         #输出信息
-    logging.info('ISBN length is'+str(len(list_isbn)))
-    print('ISBN length is:'+str(len(list_isbn)))
+    logger.info('ISBN length is'+str(len(list_isbn)))
     return list_isbn
 
 #通过ISBN查询图书详细信息
@@ -76,7 +72,7 @@ def ISBNListToBookInformation(list_isbn):
             bookdetail = ['none','none','none','none','none']
         #构建图书详细信息
         bookdetaillist.append(bookdetail)
-    logging.info('book detail list build succeed.')
+    logger.info('book detail list build succeed.')
     return bookdetaillist
     
 #构建输入基础数据集
@@ -87,13 +83,14 @@ def BuildDatabaseRawDataORM(execl_filepath):
         list_isbn = execlDataToList(execl_filepath)
         #图书信息清单
         book_details_list = ISBNListToBookInformation(list_isbn)
-        logging.info("build base information succeed.")
+        logger.info("build base information succeed.")
         #
         if len(list_isbn) != len(book_details_list):
-            logging.error('列表数据长度不符')
+            logger.error('列表数据长度不符')
             raise Exception('长度不符')
         for index in range(0,len(list_isbn)):
-            
+            #输出日志信息
+            logger.info('at present: '+str(index+1)+'sum is :'+str(len(list_isbn)))
             #构建基础元组数据
             tempbook = Book(ISBN=list_isbn[index],book_name=book_details_list[index][0],book_author=book_details_list[index][1],
                     book_publisher=book_details_list[index][2],book_number=book_details_list[index][3],
@@ -124,8 +121,6 @@ def InsertBatchBooks(booklist):
         
         
         
-        
-
 if __name__ == '__main__':
     InsertBookData('123', '韭菜的自我修养', '刘苗苗', '豌豆苗出版社', '瞎编的', 98.56, None, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))        
         

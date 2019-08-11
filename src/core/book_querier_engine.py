@@ -6,11 +6,11 @@ Created on 2019年7月20日
 
 import urllib.request
 import re
-import logging
+from core.loggers import logger
 
 class ISBNSearchEngine:
     def  __init__(self):
-        print('search engine initialize.....') 
+        logger.info('search engine initialize.....') 
         
     #获取页面解析
     def __getPage(self,ISBN):
@@ -32,7 +32,7 @@ class ISBNSearchEngine:
         #执行页面获取
         content = self.__getPage(ISBN)
         if content is None:
-            logging.info('查询结果为空。')
+            logger.info('查询结果为空。')
             return -1
         else:
         #进行搜索
@@ -53,6 +53,6 @@ class ISBNSearchEngine:
             book_information = [title_field.group(1).__str__(),author_field.group(1).__str__(),imprint_field.group(1).__str__() \
                    ,callon_field.group(1).__str__(),isbprice,\
                    isbn_field.group(1).__str__()]
-            logging.info(book_information)
+            logger.info(book_information)
             return book_information 
         

@@ -6,7 +6,7 @@ Created on 2019年8月8日
 
 #图书对象模型
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column,Integer,String,TEXT,TIME
+from sqlalchemy import Column,Integer,String,TEXT
 from sqlalchemy.sql.sqltypes import Float
 from sqlalchemy.dialects.mysql.types import TIMESTAMP
 

@@ -15,12 +15,12 @@ Created on 2019年7月21日
 from PyQt5 import QtCore, QtWidgets
 import sys
 from PyQt5.Qt import QMainWindow
-import logging
 from ORM_model.decBaseClass import Book
 import datetime
 from core.book_querier_engine import ISBNSearchEngine
 from core.rawdata_orm import InsertBook, BuildDatabaseRawDataORM,\
     InsertBatchBooks
+from core.loggers import logger
 
 
 class QtLibraryUI(QMainWindow):
@@ -167,19 +167,19 @@ class QtLibraryUI(QMainWindow):
             #插入图书
             InsertBook(book)
             #日志记录
-            logging.info('Write to database done.')
+            logger.info('Write to database done.')
 
     #execl 内文件批量导入
     def btnBookBatchImportClicked(self):
         #导入文件路径
         file_path = self.text_path.toPlainText()
         #调试信息
-        logging.debug(file_path)
+        logger.debug(file_path)
         #构建原始数据
         books = BuildDatabaseRawDataORM(file_path)
         #图书批量插入
         InsertBatchBooks(books)
-        logging.info("Write to database succeed.")
+        logger.info("Write to database succeed.")
     
     
 
