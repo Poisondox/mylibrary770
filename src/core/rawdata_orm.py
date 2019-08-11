@@ -1,20 +1,49 @@
 '''
-Created on 2019年7月21日
+Created on 2019年8月7日
 
 @author: 55057
 '''
-
-
-
+from sqlalchemy.engine import create_engine
+from sqlalchemy.orm.session import sessionmaker
+from sqlalchemy.orm.scoping import scoped_session
+from ORM_model.decBaseClass import initDatabase, destoryDatabase, Book
+from contextlib import contextmanager
+import time
 import datetime
 import openpyxl
 import logging
-from book_querier.book_querier_engine import ISBNSearchEngine
-from ORM_model.decBaseClass import Book
-from dispatcher.rawdata_orm import InsertBatchBooks
+from core.book_querier_engine import ISBNSearchEngine
 
 
 
+
+
+#初始化数据库连接
+sql_engine = create_engine('postgresql://sa:xyq566403@192.168.3.88:5432/librarydb',echo=True)
+#初始化数据库实例session
+sessionType = scoped_session(sessionmaker(bind=sql_engine))
+#销毁数据库
+destoryDatabase(sql_engine)
+#初始化数据库
+initDatabase(sql_engine)
+
+#获取session实例操作数据库
+def getSession():
+    return sessionType()
+
+#数据通过ORM手段写入数据库，方法实现于此文件
+@contextmanager
+def session_flow():
+    session = getSession()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise 
+    finally:
+        session.close()
+        
 #从Execl获取数据
 def execlDataToList(execl_filepath):
         #打开工作簿
@@ -24,8 +53,8 @@ def execlDataToList(execl_filepath):
     #定义ISBN列表
     list_isbn = []
     for row_id in range(1,sheet.max_row+1):
-       #增加ISBN
-       list_isbn.append(sheet["A"+str(row_id)].value)
+        #增加ISBN
+        list_isbn.append(sheet["A"+str(row_id)].value)
         #输出信息
     logging.info('ISBN length is'+str(len(list_isbn)))
     print('ISBN length is:'+str(len(list_isbn)))
@@ -36,6 +65,7 @@ def ISBNListToBookInformation(list_isbn):
     #图书详细内容
     isbn_list_length = len(list_isbn)
     bookdetaillist = []
+    #初始化检索引擎
     isbnEngine = ISBNSearchEngine()
     for index in range(0,isbn_list_length):
         #查找图书详情
@@ -52,7 +82,7 @@ def ISBNListToBookInformation(list_isbn):
 def BuildDatabaseRawDataORM(execl_filepath):
         #原始数据列表
         ORM_data_list = []
-        #isbn清单
+        #ISBN清单
         list_isbn = execlDataToList(execl_filepath)
         #图书信息清单
         book_details_list = ISBNListToBookInformation(list_isbn)
@@ -67,25 +97,35 @@ def BuildDatabaseRawDataORM(execl_filepath):
                     book_publisher=book_details_list[index][2],book_number=book_details_list[index][3],
                     book_price=book_details_list[index][4],book_notes=None,
                     book_storoge_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-            
             #构建整体数据集
             ORM_data_list.append(tempbook)
-    
         return ORM_data_list
-
-
-
-
-#test function
-if __name__ == '__main__':
-    #构建ORM原型数据
-    books = BuildDatabaseRawDataORM('D:/raw_data.xlsx');
-    print(len(books))
-    #图书批量插入
-    InsertBatchBooks(books)
-    
-
-
-
+   
+#ORM功能        
+#单本图书插入
+def InsertBookData(isbn,ibook_name,ibook_author,ibook_publisher,ibook_number,ibook_price,ibook_notes,ibook_storoge_time):
+    with session_flow() as temp_session:
+        book = Book(ISBN=isbn,book_name=ibook_name,book_author=ibook_author,
+                    book_publisher=ibook_publisher,book_number=ibook_number,
+                    book_price=ibook_price,book_notes=ibook_notes,
+                    book_storoge_time=ibook_storoge_time)
+        #录入图书数据
+        temp_session.add(book)
+def InsertBook(ibook):
+    with session_flow() as temp_session:
+        temp_session.add(ibook)
+#图书批量插入
+def InsertBatchBooks(booklist):
+    with session_flow() as temp_session:
+        #全部写入session
+        temp_session.add_all(booklist)
         
-    
+        
+        
+        
+
+if __name__ == '__main__':
+    InsertBookData('123', '韭菜的自我修养', '刘苗苗', '豌豆苗出版社', '瞎编的', 98.56, None, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))        
+        
+
+
