@@ -1,6 +1,12 @@
 #不同步数据库配置文件
 db_cfg.ini
 
+#不同步IDE配置文件
+.pydevproject
+
 #不同步项目文件
 .project
+#不同步缓存文件
+*.pyc
+*.prefs
 
