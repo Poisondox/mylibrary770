@@ -1,9 +1,8 @@
 '''
-Created on 2019年7月21日
+Created on 2019�?7�?21�?
 
 @author: 55057
 '''
-
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
@@ -11,19 +10,19 @@ Created on 2019年7月21日
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtWidgets
 import sys
 from PyQt5.Qt import QMainWindow
 from ORM_model.decBaseClass import Book
 import datetime
 from core.book_querier_engine import ISBNSearchEngine
-from core.rawdata_orm import InsertBook, BuildDatabaseRawDataORM,\
+from core.rawdata_orm import InsertBook, BuildDatabaseRawDataORM, \
     InsertBatchBooks
 from core.loggers import logger
 
 
 class QtLibraryUI(QMainWindow):
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -107,7 +106,7 @@ class QtLibraryUI(QMainWindow):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "ISBN："))
+        self.label.setText(_translate("MainWindow", "ISBN�?"))
         self.btn_ISBNQuery.setText(_translate("MainWindow", "ISBN查询"))
         self.btn_databaseQuery.setText(_translate("MainWindow", "库内查询"))
         self.btn_addBook.setText(_translate("MainWindow", "图书录入"))
@@ -116,35 +115,36 @@ class QtLibraryUI(QMainWindow):
         self.btn_browse.setText(_translate("MainWindow", "浏览"))
         self.btn_import.setText(_translate("MainWindow", "导入"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "数据导入"))
-        self.label_2.setText(_translate("MainWindow", "服务器端口"))
+        self.label_2.setText(_translate("MainWindow", "服务器端�?"))
         self.btn_start.setText(_translate("MainWindow", "启动"))
         self.btn_restart.setText(_translate("MainWindow", "重启"))
         self.btn_stop.setText(_translate("MainWindow", "停止"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "数据服务器"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "数据服务�?"))
 
-    #设置按钮事件
-    def setupSignalsAndslots(self,MainWindow):
-        #ISBN查询
+    # 设置按钮事件
+    def setupSignalsAndslots(self, MainWindow):
+        # ISBN查询
         self.btn_ISBNQuery.clicked.connect(self.btnISBNQuertClicked)
-        #浏览按钮事件
+        # 浏览按钮事件
         self.btn_browse.clicked.connect(self.btnBrowseClicked)
-        #添加书本
+        # 添加书本
         self.btn_addBook.clicked.connect(self.btnAddBookClicked)
-        #Execl批量导入
+        # Execl批量导入
         self.btn_import.clicked.connect(self.btnBookBatchImportClicked)
     
-    #ISBN查询图书信息
+    # ISBN查询图书信息
     def btnISBNQuertClicked(self):
-        #QMessageBox.about(self,'test','information')
+        # QMessageBox.about(self,'test','information')
         str_isbn = self.text_isbn.toPlainText()
         isbnEngine = ISBNSearchEngine()
         book_information = isbnEngine.get_information_with_ISBN(str_isbn)
         if book_information == -1:
-            self.textBrowser.setText('查询结果为空。')
+            self.textBrowser.setText('查询结果为空�?')
         else:       
-            book_information_format = "标题：{0}\n作者:{1}\n出版社：{2}\n中图分类号：{3}\n价格：{4} CNY\n".format(book_information[0],book_information[1],book_information[2],book_information[3],book_information[4])
+            book_information_format = "标题：{0}\n作�??:{1}\n出版社：{2}\n中图分类号：{3}\n价格：{4} CNY\n".format(book_information[0], book_information[1], book_information[2], book_information[3], book_information[4])
             self.textBrowser.setText(book_information_format)
-    #获取导入文件路径   
+
+    # 获取导入文件路径   
     def btnBrowseClicked(self):
         path = QtWidgets.QFileDialog.getOpenFileNames(self, '', '', '', '')
         self.text_path.setText(path[0].__str__()[2:][:-2])
@@ -152,35 +152,34 @@ class QtLibraryUI(QMainWindow):
     def btnAddBookClicked(self):
         str_isbn = self.text_isbn.toPlainText()
         isbnEngine = ISBNSearchEngine()
-        #获取图书信息
+        # 获取图书信息
         book_information = isbnEngine.get_information_with_ISBN(str_isbn)
         if book_information == -1:
-            self.textBrowser.setText('查询结果为空。')
+            self.textBrowser.setText('查询结果为空�?')
         else:       
-            book_information_format = "标题：{0}\n作者:{1}\n出版社：{2}\n中图分类号：{3}\n价格：{4} CNY\n".format(book_information[0],book_information[1],book_information[2],book_information[3],book_information[4])
+            book_information_format = "标题：{0}\n作�??:{1}\n出版社：{2}\n中图分类号：{3}\n价格：{4} CNY\n".format(book_information[0], book_information[1], book_information[2], book_information[3], book_information[4])
             self.textBrowser.setText(book_information_format)
-            #构建ORM模型
-            book = Book(ISBN=str_isbn,book_name=book_information[0],book_author=book_information[1],
-                    book_publisher=book_information[2],book_number=book_information[3],
-                    book_price=book_information[4],book_notes=None,
+            # 构建ORM模型
+            book = Book(ISBN=str_isbn, book_name=book_information[0], book_author=book_information[1],
+                    book_publisher=book_information[2], book_number=book_information[3],
+                    book_price=book_information[4], book_notes=None,
                     book_storoge_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-            #插入图书
+            # 插入图书
             InsertBook(book)
-            #日志记录
+            # 日志记录
             logger.info('Write to database done.')
 
-    #execl 内文件批量导入
+    # execl 内文件批量导�?
     def btnBookBatchImportClicked(self):
-        #导入文件路径
+        # 导入文件路径
         file_path = self.text_path.toPlainText()
-        #调试信息
+        # 调试信息
         logger.debug(file_path)
-        #构建原始数据
+        # 构建原始数据
         books = BuildDatabaseRawDataORM(file_path)
-        #图书批量插入
+        # 图书批量插入
         InsertBatchBooks(books)
         logger.info("Write to database succeed.")
-    
     
 
 if __name__ == '__main__':
